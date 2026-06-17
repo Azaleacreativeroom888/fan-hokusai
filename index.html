@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>北斎の宇宙 — Hokusai Universe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0D1B2A;
+      --hokusai:   #1B3A6B;
+      --mid-blue:  #2C5282;
+      --light-blue:#4A7BAF;
+      --ash:       #8B8B8B;
+      --paper:     #E8E8E0;
+      --white:     #F4F4EE;
+      --wave:      #C9D9EC;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Noto Serif JP', serif;
+      line-height: 1.9;
+      overflow-x: hidden;
+    }
+
+    /* ===== NAVIGATION ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 3rem;
+      background: rgba(13, 27, 42, 0.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(74, 123, 175, 0.2);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      color: var(--wave);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav-links a {
+      color: var(--ash);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--wave); }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      padding-top: 60px;
+    }
+
+    /* 背景グラデーション */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, #1B3A6B 0%, #0D1B2A 65%);
+    }
+
+    /* 北斎波 SVG */
+    .wave-container {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 55%;
+      pointer-events: none;
+    }
+
+    .wave-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 波アニメーション */
+    @keyframes waveSway {
+      0%   { transform: translateX(0); }
+      50%  { transform: translateX(-2%); }
+      100% { transform: translateX(0); }
+    }
+
+    .wave-path-1 { animation: waveSway 8s ease-in-out infinite; }
+    .wave-path-2 { animation: waveSway 10s ease-in-out infinite reverse; }
+
+    /* 富士山シルエット */
+    .fuji {
+      position: absolute;
+      bottom: 38%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 90px solid transparent;
+      border-right: 90px solid transparent;
+      border-bottom: 110px solid #0D1B2A;
+      opacity: 0.65;
+      filter: drop-shadow(0 0 40px rgba(27,58,107,0.5));
+    }
+
+    .fuji::after {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: -45px;
+      width: 0;
+      height: 0;
+      border-left: 45px solid transparent;
+      border-right: 45px solid transparent;
+      border-bottom: 40px solid var(--white);
+      opacity: 0.5;
+    }
+
+    /* ヒーローテキスト */
+    .hero-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero-eyebrow {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+      color: var(--light-blue);
+      margin-bottom: 1rem;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--white);
+      text-shadow: 0 4px 40px rgba(27,58,107,0.8);
+    }
+
+    .hero-title .kanji {
+      display: block;
+      font-size: clamp(1.4rem, 3.5vw, 2.6rem);
+      font-weight: 300;
+      letter-spacing: 0.5em;
+      color: var(--wave);
+      margin-bottom: 0.3rem;
+    }
+
+    .hero-sub {
+      margin-top: 1.6rem;
+      font-size: 0.88rem;
+      letter-spacing: 0.2em;
+      color: var(--ash);
+      line-height: 2;
+    }
+
+    .hero-nav-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--ash);
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(6px); }
+    }
+
+    .hero-nav-hint span {
+      display: block;
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--ash), transparent);
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    /* ===== INTRO SECTION ===== */
+    .intro {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.68rem;
+      letter-spacing: 0.35em;
+      color: var(--light-blue);
+      border-top: 1px solid var(--light-blue);
+      padding-top: 0.5rem;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+
+    .intro h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 400;
+      line-height: 1.6;
+      color: var(--white);
+      margin-bottom: 1.8rem;
+    }
+
+    .intro p {
+      font-size: 0.92rem;
+      color: var(--ash);
+      line-height: 2.2;
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--hokusai), transparent);
+    }
+
+    /* ===== WORKS SECTION ===== */
+    .works {
+      padding: 5rem 2rem 7rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .works-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+    }
+
+    .works-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+
+    .works-title small {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: var(--light-blue);
+      margin-bottom: 0.3rem;
+    }
+
+    /* 代表作カード */
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+      background: rgba(74, 123, 175, 0.15);
+      border: 1px solid rgba(74, 123, 175, 0.15);
+    }
+
+    .work-card {
+      background: var(--ink);
+      padding: 2rem 1.8rem;
+      position: relative;
+      transition: background 0.35s;
+      cursor: default;
+    }
+
+    .work-card:hover { background: #13253A; }
+
+    .work-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: rgba(74, 123, 175, 0.5);
+      margin-bottom: 1rem;
+    }
+
+    .work-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+      line-height: 1.4;
+    }
+
+    .work-card .work-en {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.78rem;
+      color: var(--light-blue);
+      margin-bottom: 1rem;
+    }
+
+    .work-card p {
+      font-size: 0.8rem;
+      color: var(--ash);
+      line-height: 2;
+    }
+
+    .work-accent {
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px;
+      height: 0;
+      background: var(--light-blue);
+      transition: height 0.4s ease;
+    }
+
+    .work-card:hover .work-accent { height: 100%; }
+
+    /* ===== SITE NAV CARDS ===== */
+    .site-nav {
+      padding: 5rem 2rem 7rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .site-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-top: 2.5rem;
+    }
+
+    .nav-card {
+      display: block;
+      text-decoration: none;
+      padding: 2.5rem 2rem;
+      border: 1px solid rgba(74, 123, 175, 0.2);
+      background: rgba(27, 58, 107, 0.08);
+      transition: background 0.35s, border-color 0.35s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-card:hover {
+      background: rgba(27, 58, 107, 0.22);
+      border-color: var(--light-blue);
+      transform: translateY(-3px);
+    }
+
+    .nav-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(74,123,175,0.06) 0%, transparent 60%);
+    }
+
+    .nav-card-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .nav-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.3rem;
+    }
+
+    .nav-card .nav-card-en {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.72rem;
+      color: var(--light-blue);
+      display: block;
+      margin-bottom: 0.8rem;
+    }
+
+    .nav-card p {
+      font-size: 0.78rem;
+      color: var(--ash);
+      line-height: 1.9;
+    }
+
+    .nav-card-arrow {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.8rem;
+      color: rgba(74,123,175,0.4);
+      font-size: 1.2rem;
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .nav-card:hover .nav-card-arrow {
+      color: var(--light-blue);
+      transform: translateX(4px);
+    }
+
+    /* ===== QUOTE SECTION ===== */
+    .quote-section {
+      padding: 6rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quote-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, rgba(27,58,107,0.12), transparent);
+    }
+
+    blockquote {
+      position: relative;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    blockquote p {
+      font-size: clamp(1rem, 2.2vw, 1.4rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 2.2;
+      letter-spacing: 0.05em;
+    }
+
+    blockquote cite {
+      display: block;
+      margin-top: 2rem;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--ash);
+      letter-spacing: 0.2em;
+    }
+
+    .quote-deco {
+      font-family: 'Playfair Display', serif;
+      font-size: 6rem;
+      line-height: 1;
+      color: rgba(74,123,175,0.12);
+      position: absolute;
+      top: -1rem;
+      left: 0;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid rgba(74, 123, 175, 0.15);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    footer p {
+      font-size: 0.72rem;
+      color: rgba(139,139,139,0.5);
+      letter-spacing: 0.15em;
+      line-height: 2;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      .works-grid,
+      .site-nav-grid { grid-template-columns: 1fr; }
+      .works-header { flex-direction: column; gap: 0.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .wave-path-1, .wave-path-2 { animation: none; }
+      .hero-nav-hint span { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ナビゲーション -->
+  <nav>
+    <a href="index.html" class="nav-logo">北斎の宇宙</a>
+    <ul class="nav-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="blog.html">BLOG</a></li>
+      <li><a href="gallery.html">GALLERY</a></li>
+      <li><a href="about.html">ABOUT</a></li>
+    </ul>
+  </nav>
+
+  <!-- ヒーロー -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+
+    <!-- 波のSVG -->
+    <div class="wave-container">
+      <svg class="wave-svg" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <!-- 遠い波（薄い） -->
+        <path class="wave-path-2"
+          d="M0,380 C180,320 260,420 440,360 C620,300 700,400 880,350 C1060,300 1140,410 1440,370 L1440,600 L0,600 Z"
+          fill="rgba(27,58,107,0.18)" />
+
+        <!-- 中間の波 -->
+        <path class="wave-path-1"
+          d="M0,430 C120,370 240,470 380,410 C520,350 640,450 800,400 C960,350 1100,440 1440,420 L1440,600 L0,600 Z"
+          fill="rgba(27,58,107,0.32)" />
+
+        <!-- 白い波頭（手前） -->
+        <path
+          d="M0,470 C80,450 140,490 220,460 C300,430 360,475 460,448 C560,422 620,465 740,445 C860,425 940,468 1060,445 C1180,422 1300,460 1440,455 L1440,600 L0,600 Z"
+          fill="rgba(44,82,130,0.55)" />
+
+        <!-- 波頭の白い縁取り -->
+        <path
+          d="M0,470 C80,450 140,490 220,460 C300,430 360,475 460,448 C560,422 620,465 740,445 C860,425 940,468 1060,445 C1180,422 1300,460 1440,455"
+          fill="none" stroke="rgba(201,217,236,0.5)" stroke-width="1.5" />
+
+        <!-- 手前の波 -->
+        <path
+          d="M0,510 C100,490 200,530 340,505 C480,480 560,520 700,500 C840,480 980,515 1100,495 C1220,475 1340,510 1440,505 L1440,600 L0,600 Z"
+          fill="rgba(13,27,42,0.9)" />
+
+        <!-- 小さな波の泡 -->
+        <ellipse cx="350" cy="468" rx="18" ry="5" fill="rgba(201,217,236,0.35)" />
+        <ellipse cx="700" cy="444" rx="14" ry="4" fill="rgba(201,217,236,0.3)" />
+        <ellipse cx="1050" cy="444" rx="20" ry="5" fill="rgba(201,217,236,0.35)" />
+        <ellipse cx="160" cy="460" rx="10" ry="3" fill="rgba(201,217,236,0.25)" />
+        <ellipse cx="880" cy="466" rx="12" ry="3.5" fill="rgba(201,217,236,0.28)" />
+      </svg>
+    </div>
+
+    <!-- 富士山 -->
+    <div class="fuji"></div>
+
+    <!-- テキスト -->
+    <div class="hero-content">
+      <span class="hero-eyebrow">Katsushika Hokusai Fan Site</span>
+      <h1 class="hero-title">
+        <span class="kanji">葛 飾 北 斎</span>
+        HOKUSAI
+      </h1>
+      <p class="hero-sub">
+        1760 — 1849　｜　浮世絵師　｜　冨嶽三十六景<br>
+        <span style="font-family:'Playfair Display',serif; font-style:italic; font-size:0.82rem;">
+          "If only Heaven will give me just another ten years…"
+        </span>
+      </p>
+    </div>
+
+    <div class="hero-nav-hint">
+      <span></span>
+      scroll
+    </div>
+  </section>
+
+  <!-- イントロ -->
+  <section class="intro">
+    <span class="section-label">このサイトについて</span>
+    <h2>「百歳にして神妙ならんと欲す」</h2>
+    <p>
+      葛飾北斎は生涯に三万点以上の作品を残した江戸の絵師。<br>
+      九十歳を超えてなお「もっと描きたい」と言い続けた、<br>
+      絵に憑かれた男の宇宙を、このサイトでは勉強しながら追いかけています。<br><br>
+      感想漫画・模写イラスト・学習日記。ファンの目線で、北斎の波に飛び込みます。
+    </p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 代表作 -->
+  <section class="works">
+    <div class="works-header">
+      <h2 class="works-title">
+        <small>MASTERWORKS</small>
+        代表作を知る
+      </h2>
+    </div>
+    <div class="works-grid">
+      <div class="work-card">
+        <div class="work-accent"></div>
+        <p class="work-num">01</p>
+        <h3>冨嶽三十六景</h3>
+        <p class="work-en">Thirty-six Views of Mt. Fuji</p>
+        <p>神奈川沖浪裏をはじめ、富士山を主題に描いた風景版画シリーズ。ベロ藍（プルシアンブルー）を大胆に使い、後世の芸術家に多大な影響を与えた。</p>
+      </div>
+      <div class="work-card">
+        <div class="work-accent"></div>
+        <p class="work-num">02</p>
+        <h3>北斎漫画</h3>
+        <p class="work-en">Hokusai Manga</p>
+        <p>人物・動植物・建物・妖怪など、あらゆる題材を描いたスケッチ集。全十五冊。「漫画」という言葉の語源のひとつとされ、現代の漫画にも繋がる。</p>
+      </div>
+      <div class="work-card">
+        <div class="work-accent"></div>
+        <p class="work-num">03</p>
+        <h3>諸国滝廻り</h3>
+        <p class="work-en">A Tour of Japanese Waterfalls</p>
+        <p>全国の滝を描いた八枚組の版画。木曽路の旅を経て描かれた躍動感あふれる水の表現は、北斎の自然描写の真骨頂といえる。</p>
+      </div>
+      <div class="work-card">
+        <div class="work-accent"></div>
+        <p class="work-num">04</p>
+        <h3>百人一首うばがゑとき</h3>
+        <p class="work-en">One Hundred Poems</p>
+        <p>百人一首の和歌を絵解きした版画シリーズ。北斎晩年の作品群のひとつで、繊細な人物表現と大胆な構図が融合している。</p>
+      </div>
+      <div class="work-card">
+        <div class="work-accent"></div>
+        <p class="work-num">05</p>
+        <h3>琉球八景</h3>
+        <p class="work-en">Eight Views of Ryukyu</p>
+        <p>琉球（現・沖縄）の風景を描いた連作。実際には訪れていない場所を想像で描いたとされ、異国の雰囲気が色濃く漂う。</p>
+      </div>
+      <div class="work-card">
+        <div class="work-accent"></div>
+        <p class="work-num">06</p>
+        <h3>肉筆画</h3>
+        <p class="work-en">Original Paintings</p>
+        <p>版画とは異なり、直接絵筆で描いた一点もの。特に晩年の肉筆画には凄みと繊細さが同居し、美術館でしか見られない別格の迫力がある。</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- サイト内ナビ -->
+  <section class="site-nav">
+    <span class="section-label">EXPLORE</span>
+    <h2 class="works-title">
+      <small>SITE CONTENTS</small>
+      サイトを探検する
+    </h2>
+    <div class="site-nav-grid">
+      <a href="blog.html" class="nav-card">
+        <span class="nav-card-icon">📝</span>
+        <h3>学習日記</h3>
+        <span class="nav-card-en">Study Blog</span>
+        <p>北斎を勉強する日々の記録。発見したこと、驚いたこと、わからなかったことを短くつぶやく。</p>
+        <span class="nav-card-arrow">→</span>
+      </a>
+      <a href="gallery.html" class="nav-card">
+        <span class="nav-card-icon">🎨</span>
+        <h3>ギャラリー</h3>
+        <span class="nav-card-en">Gallery</span>
+        <p>北斎をテーマにした４コマ漫画と、模写・インスパイアイラスト。ファンアートを少しずつ増やしていく。</p>
+        <span class="nav-card-arrow">→</span>
+      </a>
+      <a href="about.html" class="nav-card">
+        <span class="nav-card-icon">🌊</span>
+        <h3>このサイトについて</h3>
+        <span class="nav-card-en">About</span>
+        <p>管理人と、このサイトを作ろうと思ったきっかけについて。北斎との出会いから。</p>
+        <span class="nav-card-arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 引用 -->
+  <section class="quote-section">
+    <blockquote>
+      <span class="quote-deco">"</span>
+      <p>
+        七十歳以前に描いたものは、取るに足りない。<br>
+        七十三歳でようやく、鳥獣虫魚の骨格と<br>
+        草木の出生を少しく悟り得た。
+      </p>
+      <cite>— 葛飾北斎、『富嶽百景』跋文より</cite>
+    </blockquote>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <p class="footer-logo">北斎の宇宙</p>
+    <p>
+      Hokusai Universe — A fan site<br>
+      管理人：Azalea72 ｜ 作品の著作権は各所蔵機関に帰属します
+    </p>
+  </footer>
+
+</body>
+</html>
