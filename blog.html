@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学習日記 — 北斎の宇宙</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0D1B2A;
+      --hokusai:   #1B3A6B;
+      --mid-blue:  #2C5282;
+      --light-blue:#4A7BAF;
+      --ash:       #8B8B8B;
+      --paper:     #E8E8E0;
+      --white:     #F4F4EE;
+      --wave:      #C9D9EC;
+      --dim:       rgba(74,123,175,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Noto Serif JP', serif;
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 3rem;
+      background: rgba(13, 27, 42, 0.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(74, 123, 175, 0.2);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      color: var(--wave);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav-links a {
+      color: var(--ash);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--white); }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      padding: 7rem 2rem 3rem;
+      max-width: 680px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(74,123,175,0.18);
+    }
+
+    .page-eyebrow {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+      color: var(--light-blue);
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header p {
+      font-size: 0.82rem;
+      color: var(--ash);
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== FEED ===== */
+    .feed {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+    }
+
+    /* 年ラベル */
+    .year-label {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 2.5rem 0 1rem;
+    }
+
+    .year-label span {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.35em;
+      color: var(--light-blue);
+      white-space: nowrap;
+    }
+
+    .year-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(74,123,175,0.2);
+    }
+
+    /* 投稿カード */
+    .post {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 0 1rem;
+      padding: 1.6rem 0;
+      border-bottom: 1px solid rgba(74,123,175,0.1);
+      position: relative;
+    }
+
+    /* 左の縦線（タイムライン） */
+    .post:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 25px;
+      top: 3.8rem;
+      bottom: -1px;
+      width: 1px;
+      background: rgba(74,123,175,0.15);
+    }
+
+    /* アイコン */
+    .post-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--hokusai), var(--mid-blue));
+      border: 1.5px solid rgba(74,123,175,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .post-body {}
+
+    .post-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .post-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.03em;
+    }
+
+    .post-handle {
+      font-size: 0.75rem;
+      color: var(--ash);
+    }
+
+    .post-date {
+      font-size: 0.72rem;
+      color: var(--ash);
+      margin-left: auto;
+      white-space: nowrap;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .post-text {
+      font-size: 0.88rem;
+      color: var(--paper);
+      line-height: 2;
+      word-break: break-all;
+    }
+
+    .post-text .highlight {
+      color: var(--wave);
+      font-weight: 700;
+    }
+
+    .post-text .tag {
+      color: var(--light-blue);
+      font-size: 0.82rem;
+    }
+
+    /* 感情バッジ */
+    .post-badge {
+      display: inline-block;
+      margin-top: 0.8rem;
+      padding: 0.15rem 0.7rem;
+      border: 1px solid rgba(74,123,175,0.3);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      color: var(--light-blue);
+      border-radius: 99px;
+    }
+
+    /* ピン留め投稿 */
+    .post.pinned {
+      background: rgba(27,58,107,0.1);
+      padding: 1.6rem 1rem;
+      border: 1px solid rgba(74,123,175,0.2);
+      border-radius: 2px;
+      margin-top: 1.5rem;
+    }
+
+    .pin-label {
+      grid-column: 1 / -1;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      color: var(--ash);
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid rgba(74,123,175,0.15);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    footer p {
+      font-size: 0.72rem;
+      color: rgba(139,139,139,0.5);
+      letter-spacing: 0.12em;
+      line-height: 2;
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { gap: 1.2rem; }
+      .page-header, .feed { padding-left: 1.2rem; padding-right: 1.2rem; }
+      .post-date { font-size: 0.68rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">北斎の宇宙</a>
+    <ul class="nav-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="blog.html" class="active">BLOG</a></li>
+      <li><a href="gallery.html">GALLERY</a></li>
+      <li><a href="about.html">ABOUT</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <span class="page-eyebrow">Study Blog</span>
+    <h1>学習日記</h1>
+    <p>北斎を勉強する日々の断片。気づいたこと、驚いたこと、まだわからないこと。</p>
+  </header>
+
+  <main class="feed">
+
+    <!-- ピン留め -->
+    <article class="post pinned">
+      <p class="pin-label">📌 &nbsp;はじめに</p>
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">2025.01.01</span>
+        </div>
+        <p class="post-text">
+          北斎のことをちゃんと勉強したくてサイトを作りました。美術館で「神奈川沖浪裏」の実物を見た瞬間、何かが変わった気がした。あの波の前に立つと、絵ってこんなに力を持てるんだと思って。勉強の記録をここに残していきます。<span class="tag"> #北斎の宇宙</span>
+        </p>
+        <span class="post-badge">はじまり</span>
+      </div>
+    </article>
+
+    <!-- 2025年 -->
+    <div class="year-label"><span>2025</span></div>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">12.18</span>
+        </div>
+        <p class="post-text">
+          北斎が93歳で亡くなる直前に「天よ、もう五年、せめてあと十年の命を」と言ったという話を読んだ。90歳を超えてもまだ足りないと思える絵への執着、すごすぎる。私は絵を描いていてそこまで思えるだろうか。<span class="tag"> #北斎語録</span>
+        </p>
+        <span class="post-badge">しびれた</span>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">12.10</span>
+        </div>
+        <p class="post-text">
+          「北斎漫画」を図書館で借りた。人・動物・建物・妖怪・波・雲……あらゆるものが描いてある。これが「漫画」という言葉の起源のひとつなのか。北斎、ほぼ現代の意味で使ってる。<span class="tag"> #北斎漫画</span>
+        </p>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">11.29</span>
+        </div>
+        <p class="post-text">
+          北斎は生涯で30回以上引越しをしたらしい。理由が「掃除が面倒になったら引っ越す」だったという説も。天才って生活観が独特すぎる。でも絵だけは一切妥協しなかった人。<span class="tag"> #北斎の生涯</span>
+        </p>
+        <span class="post-badge">びっくり</span>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">11.15</span>
+        </div>
+        <p class="post-text">
+          <span class="highlight">ベロ藍（プルシアンブルー）</span>について調べた。江戸時代にヨーロッパから輸入された化学染料で、それまでの藍より鮮やかで安定していた。北斎がこの青に出会って冨嶽三十六景が生まれたと思うと、材料ひとつで表現が変わるんだなと。<span class="tag"> #画材研究</span>
+        </p>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">11.03</span>
+        </div>
+        <p class="post-text">
+          「神奈川沖浪裏」の波の爪のような先端、あれは「波の手」と呼ばれることがあると知った。小さく描かれた富士山と巨大な波、この構図は「遠近法」と「誇張」を同時にやってる。西洋画の技法と日本の感性を融合させてる。<span class="tag"> #冨嶽三十六景</span>
+        </p>
+        <span class="post-badge">なるほど</span>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">10.22</span>
+        </div>
+        <p class="post-text">
+          北斎は「画狂老人卍（がきょうろうじんまんじ）」という号を晩年に使っていた。自分を「絵に狂った老人」と名乗るのがかっこよすぎる。謙遜なのか自虐なのか誇りなのか、全部な気がする。<span class="tag"> #号の話</span>
+        </p>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">10.08</span>
+        </div>
+        <p class="post-text">
+          北斎の娘・<span class="highlight">葛飾応為（おうい）</span>も絵師だったと知った。「吉原格子先之図」の光の表現がすごくて、むしろこっちが北斎より上手いのでは？という評価もあるらしい。娘の作品も追いかけたい。<span class="tag"> #葛飾応為</span>
+        </p>
+        <span class="post-badge">新発見</span>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">09.14</span>
+        </div>
+        <p class="post-text">
+          ゴッホとモネが北斎の浮世絵を熱狂的に集めていたという話、知ってはいたけど改めて読むと面白い。ゴッホは「僕は日本人だ」と手紙に書いていたらしい。北斎が印象派に与えた影響の大きさ、改めてすごいな。<span class="tag"> #ジャポニスム</span>
+        </p>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">08.30</span>
+        </div>
+        <p class="post-text">
+          冨嶽三十六景は「三十六」なのに実際は46枚ある。追加で10枚増刷されたらしい。人気が出すぎて止まらなくなった感じ、すごくいい。北斎本人が一番楽しかったのでは。<span class="tag"> #冨嶽三十六景</span>
+        </p>
+        <span class="post-badge">おもしろ知識</span>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">07.19</span>
+        </div>
+        <p class="post-text">
+          北斎が使った号の数、諸説あるが30以上という説も。勝川春朗→俵屋宗理→葛飾北斎→戴斗→為一→画狂老人卍……名前を変えるたびにスタイルも変えていったらしい。ひとりの人間の中に複数の絵師がいる感じ。<span class="tag"> #北斎の生涯</span>
+        </p>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">06.05</span>
+        </div>
+        <p class="post-text">
+          「諸国滝廻り」を初めてちゃんと見た。木曽路の「木曽海道六十九次」と混同してたけど全然別の作品だった。滝の連作、水の勢いの描き方が冨嶽三十六景とは全然違う。静と動、どちらも自由自在。<span class="tag"> #諸国滝廻り</span>
+        </p>
+        <span class="post-badge">勘違いしてた</span>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">04.28</span>
+        </div>
+        <p class="post-text">
+          北斎の肉筆画を初めて意識して見た。版画と全然違う。線の迷いのなさ、色の重なり方……版画は版元との共同作業だけど、肉筆はひとりの世界。どちらが「本当の北斎」なんだろう、とかえって悩むようになった。<span class="tag"> #肉筆画</span>
+        </p>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">03.12</span>
+        </div>
+        <p class="post-text">
+          北斎は弟子の数が多いことでも有名らしい。その数なんと200人以上とも。でも晩年は小布施（長野）の豪農・高井鴻山のもとで穏やかに過ごしたそう。保護者がいてよかった。小布施、いつか行ってみたい。<span class="tag"> #小布施</span>
+        </p>
+        <span class="post-badge">行きたい場所</span>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">02.03</span>
+        </div>
+        <p class="post-text">
+          このサイトの構想をまとめはじめた。ブログ・ギャラリー・アバウト。北斎の絵の模写もやってみたい。うまく描けなくていい、描くことで何かわかると思う。<span class="tag"> #サイト制作日記</span>
+        </p>
+      </div>
+    </article>
+
+    <article class="post">
+      <div class="post-avatar">🌊</div>
+      <div class="post-body">
+        <div class="post-meta">
+          <span class="post-name">Azalea72</span>
+          <span class="post-handle">@azalea_hokusai</span>
+          <span class="post-date">01.11</span>
+        </div>
+        <p class="post-text">
+          美術館で「神奈川沖浪裏」を見た。思ってたより小さかった。でも前に立った瞬間、波に引き込まれそうになった。あの感覚を忘れたくなくて、勉強をはじめることにした。<span class="tag"> #きっかけ</span>
+        </p>
+        <span class="post-badge">原点</span>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>
+    <p class="footer-logo">北斎の宇宙</p>
+    <p>
+      Hokusai Universe — A fan site<br>
+      管理人：Azalea72 ｜ 作品の著作権は各所蔵機関に帰属します
+    </p>
+  </footer>
+
+</body>
+</html>
