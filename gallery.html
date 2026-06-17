@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ギャラリー — 北斎の宇宙</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #0D1B2A;
+      --hokusai:    #1B3A6B;
+      --mid-blue:   #2C5282;
+      --light-blue: #4A7BAF;
+      --ash:        #8B8B8B;
+      --paper:      #E8E8E0;
+      --white:      #F4F4EE;
+      --wave:       #C9D9EC;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Noto Serif JP', serif;
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 3rem;
+      background: rgba(13,27,42,0.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(74,123,175,0.2);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      color: var(--wave);
+      text-decoration: none;
+    }
+
+    .nav-links { list-style: none; display: flex; gap: 2.5rem; }
+    .nav-links a {
+      color: var(--ash);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      padding: 7rem 2rem 3rem;
+      max-width: 900px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(74,123,175,0.18);
+    }
+
+    .page-eyebrow {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+      color: var(--light-blue);
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header p {
+      font-size: 0.82rem;
+      color: var(--ash);
+    }
+
+    /* ===== TAB ===== */
+    .tab-bar {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      border-bottom: 1px solid rgba(74,123,175,0.18);
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 1.2rem 2rem;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      color: var(--ash);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.25s, border-color 0.25s;
+    }
+
+    .tab-btn:hover { color: var(--wave); }
+    .tab-btn.active {
+      color: var(--white);
+      border-bottom-color: var(--light-blue);
+    }
+
+    /* ===== SECTION WRAPPER ===== */
+    .section-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+      display: none;
+    }
+    .section-wrap.active { display: block; }
+
+    .section-intro {
+      font-size: 0.82rem;
+      color: var(--ash);
+      margin-bottom: 3rem;
+      line-height: 2;
+      border-left: 2px solid rgba(74,123,175,0.35);
+      padding-left: 1rem;
+    }
+
+    /* ===== 4コマ グリッド ===== */
+    .yonkoma-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3rem 2.5rem;
+    }
+
+    .yonkoma-card {
+      background: rgba(27,58,107,0.07);
+      border: 1px solid rgba(74,123,175,0.18);
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .yonkoma-card:hover {
+      border-color: rgba(74,123,175,0.45);
+      transform: translateY(-3px);
+    }
+
+    /* 4コマ枠（実際の画像が入るまでのプレースホルダー） */
+    .yonkoma-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      aspect-ratio: 1 / 1.1;
+      border-bottom: 1px solid rgba(74,123,175,0.2);
+    }
+
+    .panel {
+      border: 0.5px solid rgba(74,123,175,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem;
+      position: relative;
+      background: rgba(13,27,42,0.6);
+      overflow: hidden;
+    }
+
+    /* パネル内のシーン（プレースホルダー用SVGイラスト） */
+    .panel svg { width: 100%; height: 100%; }
+
+    /* コマ番号 */
+    .panel-num {
+      position: absolute;
+      top: 4px; left: 6px;
+      font-size: 0.58rem;
+      color: rgba(74,123,175,0.5);
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* セリフ吹き出し */
+    .speech {
+      position: absolute;
+      bottom: 5px;
+      background: rgba(13,27,42,0.88);
+      border: 1px solid rgba(74,123,175,0.35);
+      font-size: 0.6rem;
+      padding: 0.2rem 0.45rem;
+      color: var(--paper);
+      line-height: 1.5;
+      max-width: 85%;
+      text-align: center;
+    }
+
+    .yonkoma-meta {
+      padding: 1rem 1.2rem 1.2rem;
+    }
+
+    .yonkoma-meta h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.25rem;
+    }
+
+    .yonkoma-date {
+      font-size: 0.7rem;
+      color: var(--ash);
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+    }
+
+    /* 「画像準備中」バナー */
+    .coming-soon-banner {
+      background: rgba(27,58,107,0.15);
+      border: 1px dashed rgba(74,123,175,0.25);
+      text-align: center;
+      padding: 3rem;
+      color: var(--ash);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      margin-top: 2rem;
+    }
+
+    /* ===== イラスト グリッド ===== */
+    .illust-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .illust-card {
+      background: rgba(27,58,107,0.07);
+      border: 1px solid rgba(74,123,175,0.18);
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .illust-card:hover {
+      border-color: rgba(74,123,175,0.45);
+      transform: translateY(-3px);
+    }
+
+    .illust-thumb {
+      aspect-ratio: 3 / 4;
+      background: rgba(13,27,42,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(74,123,175,0.15);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .illust-thumb svg { width: 100%; height: 100%; }
+
+    /* ジャンルタグ */
+    .genre-tag {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      padding: 0.15rem 0.5rem;
+      background: rgba(13,27,42,0.82);
+      border: 1px solid rgba(74,123,175,0.4);
+      color: var(--light-blue);
+    }
+
+    .illust-meta {
+      padding: 0.9rem 1rem 1rem;
+    }
+
+    .illust-meta h3 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.2rem;
+    }
+
+    .illust-caption {
+      font-size: 0.7rem;
+      color: var(--ash);
+      line-height: 1.8;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid rgba(74,123,175,0.15);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+    footer p {
+      font-size: 0.72rem;
+      color: rgba(139,139,139,0.5);
+      letter-spacing: 0.12em;
+      line-height: 2;
+    }
+
+    @media (max-width: 680px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { gap: 1.2rem; }
+      .page-header, .tab-bar, .section-wrap { padding-left: 1.2rem; padding-right: 1.2rem; }
+      .yonkoma-grid { grid-template-columns: 1fr; }
+      .illust-grid { grid-template-columns: repeat(2, 1fr); }
+      .tab-btn { padding: 1rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">北斎の宇宙</a>
+    <ul class="nav-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="blog.html">BLOG</a></li>
+      <li><a href="gallery.html" class="active">GALLERY</a></li>
+      <li><a href="about.html">ABOUT</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <span class="page-eyebrow">Gallery</span>
+    <h1>ギャラリー</h1>
+    <p>北斎をテーマにした４コマ漫画と、模写・インスパイアイラスト。描きながら学んでいます。</p>
+  </header>
+
+  <!-- タブ -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('yonkoma', this)">４コマ漫画</button>
+    <button class="tab-btn" onclick="switchTab('illust', this)">イラスト・模写</button>
+  </div>
+
+  <!-- ===== 4コマタブ ===== -->
+  <div id="tab-yonkoma" class="section-wrap active">
+    <p class="section-intro">
+      北斎を勉強していて「え、そうなの？」と思った瞬間を４コマに。<br>
+      史実エピソードと個人的な感想のミックスです。
+    </p>
+
+    <div class="yonkoma-grid">
+
+      <!-- 4コマ #1 -->
+      <div class="yonkoma-card">
+        <div class="yonkoma-panels">
+          <!-- コマ1 -->
+          <div class="panel">
+            <span class="panel-num">1</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <!-- 背景 -->
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 机 -->
+              <rect x="15" y="90" width="90" height="6" rx="1" fill="#2C5282" opacity="0.6"/>
+              <!-- 人物（北斎）シルエット -->
+              <ellipse cx="60" cy="68" rx="14" ry="18" fill="#1B3A6B" opacity="0.9"/>
+              <circle cx="60" cy="46" r="12" fill="#2C5282"/>
+              <!-- 顔のパーツ -->
+              <ellipse cx="56" cy="44" rx="2" ry="2.5" fill="#0D1B2A"/>
+              <ellipse cx="64" cy="44" rx="2" ry="2.5" fill="#0D1B2A"/>
+              <path d="M56,50 Q60,54 64,50" stroke="#0D1B2A" stroke-width="1.2" fill="none"/>
+              <!-- 筆 -->
+              <rect x="70" y="55" width="2" height="22" rx="1" fill="#C9D9EC" opacity="0.7" transform="rotate(-20,71,66)"/>
+              <!-- 紙 -->
+              <rect x="20" y="85" width="55" height="5" rx="1" fill="#E8E8E0" opacity="0.3"/>
+            </svg>
+            <div class="speech">よし、描くか</div>
+          </div>
+          <!-- コマ2 -->
+          <div class="panel">
+            <span class="panel-num">2</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 引越し荷物 -->
+              <rect x="15" y="60" width="35" height="30" rx="2" fill="#1B3A6B" opacity="0.7"/>
+              <rect x="55" y="70" width="25" height="20" rx="2" fill="#2C5282" opacity="0.6"/>
+              <rect x="30" y="50" width="20" height="15" rx="2" fill="#1B3A6B" opacity="0.5"/>
+              <!-- 矢印 -->
+              <path d="M85,80 L105,80" stroke="#4A7BAF" stroke-width="2" marker-end="url(#arr)"/>
+              <defs>
+                <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#4A7BAF"/>
+                </marker>
+              </defs>
+              <!-- 人 -->
+              <circle cx="50" cy="44" r="9" fill="#2C5282"/>
+              <ellipse cx="50" cy="60" rx="11" ry="14" fill="#1B3A6B" opacity="0.9"/>
+            </svg>
+            <div class="speech">また引越そ</div>
+          </div>
+          <!-- コマ3 -->
+          <div class="panel">
+            <span class="panel-num">3</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 驚く顔（読者キャラ） -->
+              <circle cx="60" cy="55" r="22" fill="#2C5282" opacity="0.85"/>
+              <ellipse cx="50" cy="52" rx="4" ry="5" fill="#0D1B2A"/>
+              <ellipse cx="70" cy="52" rx="4" ry="5" fill="#0D1B2A"/>
+              <ellipse cx="50" cy="52" rx="2" ry="2.5" fill="#C9D9EC" opacity="0.6"/>
+              <ellipse cx="70" cy="52" rx="2" ry="2.5" fill="#C9D9EC" opacity="0.6"/>
+              <path d="M50,62 Q60,70 70,62" stroke="#0D1B2A" stroke-width="1.5" fill="none"/>
+              <!-- テキスト -->
+              <text x="60" y="98" text-anchor="middle" font-size="8" fill="#C9D9EC" opacity="0.7" font-family="serif">30回以上!?</text>
+            </svg>
+            <div class="speech">え、何回？</div>
+          </div>
+          <!-- コマ4 -->
+          <div class="panel">
+            <span class="panel-num">4</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 北斎（平然） -->
+              <circle cx="60" cy="46" r="12" fill="#2C5282"/>
+              <ellipse cx="56" cy="44" rx="2" ry="2.5" fill="#0D1B2A"/>
+              <ellipse cx="64" cy="44" rx="2" ry="2.5" fill="#0D1B2A"/>
+              <path d="M55,51 L65,51" stroke="#0D1B2A" stroke-width="1.2"/>
+              <ellipse cx="60" cy="64" rx="14" ry="18" fill="#1B3A6B" opacity="0.9"/>
+              <!-- 絵 -->
+              <rect x="25" y="75" width="70" height="45" rx="2" fill="#1B3A6B" opacity="0.4" stroke="#4A7BAF" stroke-width="0.5"/>
+              <!-- 富士山ミニ -->
+              <path d="M45,105 L60,82 L75,105 Z" fill="#2C5282" opacity="0.7"/>
+              <path d="M54,88 L60,82 L66,88 Z" fill="#E8E8E0" opacity="0.4"/>
+            </svg>
+            <div class="speech">絵さえ描ければ</div>
+          </div>
+        </div>
+        <div class="yonkoma-meta">
+          <h3>引越し魔・北斎</h3>
+          <span class="yonkoma-date">2025.11.29</span>
+        </div>
+      </div>
+
+      <!-- 4コマ #2 -->
+      <div class="yonkoma-card">
+        <div class="yonkoma-panels">
+          <!-- コマ1 -->
+          <div class="panel">
+            <span class="panel-num">1</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 本棚 -->
+              <rect x="10" y="40" width="100" height="70" rx="2" fill="#1B3A6B" opacity="0.3"/>
+              <!-- 本 -->
+              <rect x="16" y="48" width="12" height="55" rx="1" fill="#4A7BAF" opacity="0.7"/>
+              <rect x="30" y="48" width="9" height="55" rx="1" fill="#2C5282" opacity="0.8"/>
+              <rect x="41" y="48" width="14" height="55" rx="1" fill="#1B3A6B" opacity="0.9"/>
+              <rect x="57" y="48" width="10" height="55" rx="1" fill="#4A7BAF" opacity="0.5"/>
+              <rect x="69" y="48" width="11" height="55" rx="1" fill="#2C5282" opacity="0.7"/>
+              <rect x="82" y="48" width="8" height="55" rx="1" fill="#1B3A6B" opacity="0.6"/>
+              <rect x="92" y="48" width="13" height="55" rx="1" fill="#4A7BAF" opacity="0.8"/>
+              <!-- ラベル -->
+              <text x="60" y="30" text-anchor="middle" font-size="7.5" fill="#C9D9EC" opacity="0.6" font-family="serif">北斎漫画 全15冊</text>
+            </svg>
+            <div class="speech">図書館で発見！</div>
+          </div>
+          <!-- コマ2 -->
+          <div class="panel">
+            <span class="panel-num">2</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 本を読む人 -->
+              <circle cx="60" cy="40" r="14" fill="#2C5282"/>
+              <ellipse cx="54" cy="37" rx="3" ry="2.5" fill="#0D1B2A"/>
+              <ellipse cx="66" cy="37" rx="3" ry="2.5" fill="#0D1B2A"/>
+              <!-- キラキラ目 -->
+              <ellipse cx="54" cy="37" rx="1.5" ry="1.2" fill="#C9D9EC" opacity="0.7"/>
+              <ellipse cx="66" cy="37" rx="1.5" ry="1.2" fill="#C9D9EC" opacity="0.7"/>
+              <path d="M53,45 Q60,50 67,45" stroke="#0D1B2A" stroke-width="1.2" fill="none"/>
+              <ellipse cx="60" cy="60" rx="14" ry="17" fill="#1B3A6B" opacity="0.9"/>
+              <!-- 本 -->
+              <rect x="35" y="65" width="50" height="35" rx="2" fill="#E8E8E0" opacity="0.25" stroke="#4A7BAF" stroke-width="0.5"/>
+              <line x1="60" y1="65" x2="60" y2="100" stroke="#4A7BAF" stroke-width="0.5" opacity="0.5"/>
+            </svg>
+            <div class="speech">すご…なんでも描いてる</div>
+          </div>
+          <!-- コマ3 -->
+          <div class="panel">
+            <span class="panel-num">3</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- いろんな絵が浮かぶ -->
+              <circle cx="35" cy="45" r="18" fill="none" stroke="#1B3A6B" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+              <circle cx="85" cy="45" r="18" fill="none" stroke="#1B3A6B" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+              <circle cx="60" cy="80" r="18" fill="none" stroke="#1B3A6B" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+              <!-- 波 -->
+              <path d="M22,45 C28,40 32,50 38,45" stroke="#4A7BAF" stroke-width="1.5" fill="none"/>
+              <!-- 富士山 -->
+              <path d="M73,55 L85,35 L97,55Z" fill="#2C5282" opacity="0.6"/>
+              <!-- 動物 -->
+              <ellipse cx="60" cy="80" rx="9" ry="7" fill="#1B3A6B" opacity="0.5"/>
+              <circle cx="54" cy="73" r="4" fill="#1B3A6B" opacity="0.5"/>
+              <circle cx="67" cy="73" r="4" fill="#1B3A6B" opacity="0.5"/>
+            </svg>
+            <div class="speech">波も富士も動物も妖怪も…</div>
+          </div>
+          <!-- コマ4 -->
+          <div class="panel">
+            <span class="panel-num">4</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 「漫画」文字 -->
+              <text x="60" y="55" text-anchor="middle" font-size="22" fill="#1B3A6B" font-family="serif" font-weight="bold" opacity="0.8">漫画</text>
+              <text x="60" y="75" text-anchor="middle" font-size="7" fill="#4A7BAF" opacity="0.7" font-family="serif" letter-spacing="1">MANGA</text>
+              <!-- 輝き -->
+              <circle cx="60" cy="60" r="38" fill="none" stroke="#4A7BAF" stroke-width="0.5" opacity="0.25"/>
+              <circle cx="60" cy="60" r="30" fill="none" stroke="#4A7BAF" stroke-width="0.5" opacity="0.2"/>
+              <!-- 人（驚き） -->
+              <circle cx="60" cy="105" r="10" fill="#2C5282" opacity="0.7"/>
+              <line x1="55" y1="100" x2="52" y2="95" stroke="#2C5282" stroke-width="1" opacity="0.6"/>
+              <line x1="65" y1="100" x2="68" y2="95" stroke="#2C5282" stroke-width="1" opacity="0.6"/>
+            </svg>
+            <div class="speech">これが「漫画」の原点!?</div>
+          </div>
+        </div>
+        <div class="yonkoma-meta">
+          <h3>「漫画」という言葉</h3>
+          <span class="yonkoma-date">2025.12.10</span>
+        </div>
+      </div>
+
+      <!-- 4コマ #3 -->
+      <div class="yonkoma-card">
+        <div class="yonkoma-panels">
+          <!-- コマ1 -->
+          <div class="panel">
+            <span class="panel-num">1</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- ゴッホ（星月夜風背景） -->
+              <path d="M0,40 Q30,20 60,40 Q90,60 120,40" stroke="#4A7BAF" stroke-width="2" fill="none" opacity="0.4"/>
+              <path d="M0,55 Q30,35 60,55 Q90,75 120,55" stroke="#4A7BAF" stroke-width="2" fill="none" opacity="0.3"/>
+              <circle cx="90" cy="25" r="8" fill="#4A7BAF" opacity="0.35"/>
+              <!-- 人物（ゴッホ） -->
+              <circle cx="45" cy="70" r="13" fill="#2C5282" opacity="0.8"/>
+              <ellipse cx="45" cy="90" rx="13" ry="17" fill="#1B3A6B" opacity="0.7"/>
+              <!-- 帽子 -->
+              <ellipse cx="45" cy="59" rx="14" ry="4" fill="#1B3A6B" opacity="0.8"/>
+              <rect x="38" y="48" width="14" height="12" rx="2" fill="#2C5282" opacity="0.8"/>
+              <!-- 浮世絵 -->
+              <rect x="70" y="60" width="35" height="50" rx="1" fill="#E8E8E0" opacity="0.2" stroke="#4A7BAF" stroke-width="0.5"/>
+              <path d="M75,90 Q87,80 100,90" stroke="#4A7BAF" stroke-width="1.5" fill="none" opacity="0.5"/>
+            </svg>
+            <div class="speech">この絵…なんだろう</div>
+          </div>
+          <!-- コマ2 -->
+          <div class="panel">
+            <span class="panel-num">2</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 北斎の波 シルエット -->
+              <path d="M10,85 C25,65 40,90 55,72 C70,55 85,80 100,70 L110,90 L10,110 Z" fill="#1B3A6B" opacity="0.6"/>
+              <path d="M10,85 C25,65 40,90 55,72 C70,55 85,80 100,70" stroke="#C9D9EC" stroke-width="1.5" fill="none" opacity="0.5"/>
+              <!-- 富士山 -->
+              <path d="M45,85 L60,60 L75,85Z" fill="#0D1B2A" opacity="0.8"/>
+              <path d="M54,68 L60,60 L66,68Z" fill="#E8E8E0" opacity="0.3"/>
+              <!-- 光 -->
+              <circle cx="60" cy="40" r="5" fill="#4A7BAF" opacity="0.3"/>
+              <text x="60" y="25" text-anchor="middle" font-size="8" fill="#C9D9EC" opacity="0.5" font-family="serif">北斎</text>
+            </svg>
+            <div class="speech">HOKUSAI…</div>
+          </div>
+          <!-- コマ3 -->
+          <div class="panel">
+            <span class="panel-num">3</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- ゴッホ（感動） -->
+              <circle cx="50" cy="50" r="14" fill="#2C5282" opacity="0.85"/>
+              <!-- 輝く目 -->
+              <ellipse cx="44" cy="47" rx="3.5" ry="4" fill="#0D1B2A"/>
+              <ellipse cx="56" cy="47" rx="3.5" ry="4" fill="#0D1B2A"/>
+              <ellipse cx="44" cy="46" rx="2" ry="1.5" fill="#C9D9EC" opacity="0.8"/>
+              <ellipse cx="56" cy="46" rx="2" ry="1.5" fill="#C9D9EC" opacity="0.8"/>
+              <path d="M43,56 Q50,62 57,56" stroke="#0D1B2A" stroke-width="1.5" fill="none"/>
+              <ellipse cx="50" cy="68" rx="14" ry="16" fill="#1B3A6B" opacity="0.8"/>
+              <!-- 帽子 -->
+              <ellipse cx="50" cy="38" rx="14" ry="4" fill="#1B3A6B" opacity="0.8"/>
+              <rect x="43" y="27" width="14" height="12" rx="2" fill="#2C5282" opacity="0.8"/>
+              <!-- キラキラ -->
+              <text x="85" y="40" font-size="14" fill="#4A7BAF" opacity="0.5">✦</text>
+              <text x="90" y="65" font-size="10" fill="#4A7BAF" opacity="0.4">✦</text>
+              <text x="80" y="55" font-size="8" fill="#C9D9EC" opacity="0.3">✦</text>
+            </svg>
+            <div class="speech">僕は日本人だ！</div>
+          </div>
+          <!-- コマ4 -->
+          <div class="panel">
+            <span class="panel-num">4</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 北斎（江戸にいる） -->
+              <circle cx="60" cy="48" r="12" fill="#2C5282"/>
+              <ellipse cx="56" cy="46" rx="2" ry="2.5" fill="#0D1B2A"/>
+              <ellipse cx="64" cy="46" rx="2" ry="2.5" fill="#0D1B2A"/>
+              <path d="M55,53 L65,53" stroke="#0D1B2A" stroke-width="1.2"/>
+              <ellipse cx="60" cy="66" rx="14" ry="18" fill="#1B3A6B" opacity="0.9"/>
+              <!-- ？マーク -->
+              <text x="85" y="48" font-size="18" fill="#4A7BAF" opacity="0.4" font-family="serif">?</text>
+              <!-- 地球で距離感 -->
+              <circle cx="25" cy="100" r="12" fill="none" stroke="#4A7BAF" stroke-width="0.8" opacity="0.3"/>
+              <text x="60" y="105" text-anchor="middle" font-size="6.5" fill="#ash" opacity="0.4" font-family="serif">（江戸で描いてた）</text>
+            </svg>
+            <div class="speech">知らんけど…描くか</div>
+          </div>
+        </div>
+        <div class="yonkoma-meta">
+          <h3>ゴッホと北斎</h3>
+          <span class="yonkoma-date">2025.09.14</span>
+        </div>
+      </div>
+
+      <!-- 4コマ #4 -->
+      <div class="yonkoma-card">
+        <div class="yonkoma-panels">
+          <!-- コマ1 -->
+          <div class="panel">
+            <span class="panel-num">1</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- タイトル看板 -->
+              <rect x="15" y="45" width="90" height="45" rx="3" fill="#1B3A6B" opacity="0.5" stroke="#4A7BAF" stroke-width="0.8"/>
+              <text x="60" y="63" text-anchor="middle" font-size="9" fill="#C9D9EC" opacity="0.8" font-family="serif">冨嶽三十六景</text>
+              <text x="60" y="78" text-anchor="middle" font-size="7" fill="#4A7BAF" font-family="serif">全部で何枚？</text>
+              <!-- 人 -->
+              <circle cx="60" cy="108" r="9" fill="#2C5282" opacity="0.7"/>
+            </svg>
+            <div class="speech">「三十六景」だから36枚？</div>
+          </div>
+          <!-- コマ2 -->
+          <div class="panel">
+            <span class="panel-num">2</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 版木・版元 -->
+              <rect x="20" y="50" width="80" height="55" rx="2" fill="#1B3A6B" opacity="0.4"/>
+              <!-- 帳簿 -->
+              <rect x="30" y="60" width="35" height="40" rx="1" fill="#E8E8E0" opacity="0.2" stroke="#4A7BAF" stroke-width="0.5"/>
+              <line x1="35" y1="72" x2="58" y2="72" stroke="#4A7BAF" stroke-width="0.5" opacity="0.4"/>
+              <line x1="35" y1="80" x2="58" y2="80" stroke="#4A7BAF" stroke-width="0.5" opacity="0.4"/>
+              <!-- 人（版元）-->
+              <circle cx="85" cy="65" r="9" fill="#2C5282" opacity="0.7"/>
+              <ellipse cx="85" cy="80" rx="9" ry="12" fill="#1B3A6B" opacity="0.6"/>
+            </svg>
+            <div class="speech">売れすぎて追加10枚！</div>
+          </div>
+          <!-- コマ3 -->
+          <div class="panel">
+            <span class="panel-num">3</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- 計算式 -->
+              <text x="60" y="50" text-anchor="middle" font-size="11" fill="#C9D9EC" opacity="0.7" font-family="serif">36 + 10</text>
+              <line x1="30" y1="58" x2="90" y2="58" stroke="#4A7BAF" stroke-width="1" opacity="0.5"/>
+              <text x="60" y="75" text-anchor="middle" font-size="18" fill="#4A7BAF" opacity="0.8" font-family="serif" font-weight="bold">= 46</text>
+              <!-- 枚の字 -->
+              <text x="60" y="90" text-anchor="middle" font-size="8" fill="#C9D9EC" opacity="0.4" font-family="serif">枚</text>
+              <!-- 人（ぽかん） -->
+              <circle cx="60" cy="112" r="9" fill="#2C5282" opacity="0.7"/>
+              <text x="60" y="116" text-anchor="middle" font-size="8" fill="#0D1B2A">・・</text>
+            </svg>
+            <div class="speech">合計46枚…</div>
+          </div>
+          <!-- コマ4 -->
+          <div class="panel">
+            <span class="panel-num">4</span>
+            <svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="130" fill="#0a1520"/>
+              <!-- ツッコミ -->
+              <rect x="10" y="15" width="100" height="28" rx="12" fill="#1B3A6B" opacity="0.5" stroke="#4A7BAF" stroke-width="0.5"/>
+              <text x="60" y="34" text-anchor="middle" font-size="8.5" fill="#C9D9EC" opacity="0.85" font-family="serif">三十六景じゃないじゃん</text>
+              <!-- 三角ぽち（吹き出しの矢印） -->
+              <polygon points="55,43 65,43 60,52" fill="#1B3A6B" opacity="0.5"/>
+              <!-- 人（ツッコミ） -->
+              <circle cx="60" cy="68" r="14" fill="#2C5282" opacity="0.85"/>
+              <ellipse cx="53" cy="65" rx="3" ry="3.5" fill="#0D1B2A"/>
+              <ellipse cx="67" cy="65" rx="3" ry="3.5" fill="#0D1B2A"/>
+              <path d="M52,74 Q60,68 68,74" stroke="#0D1B2A" stroke-width="1.5" fill="none"/>
+              <ellipse cx="60" cy="89" rx="14" ry="17" fill="#1B3A6B" opacity="0.9"/>
+            </svg>
+            <div class="speech">人気すぎたんや北斎…</div>
+          </div>
+        </div>
+        <div class="yonkoma-meta">
+          <h3>三十六景は46枚</h3>
+          <span class="yonkoma-date">2025.08.30</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="coming-soon-banner">
+      <p>📎 &nbsp; 実際の４コマ画像はここにアップロード予定です</p>
+      <p style="font-size:0.72rem; margin-top:0.5rem; opacity:0.6;">img タグの src を画像ファイルパスに差し替えてください</p>
+    </div>
+  </div>
+
+  <!-- ===== イラストタブ ===== -->
+  <div id="tab-illust" class="section-wrap">
+    <p class="section-intro">
+      北斎の作品を模写したもの、構図やタッチを参考にしたオリジナルイラスト。<br>
+      うまく描けなくていい、描いてわかることがある、という気持ちで続けています。
+    </p>
+
+    <div class="illust-grid">
+
+      <!-- イラスト #1 -->
+      <div class="illust-card">
+        <div class="illust-thumb">
+          <span class="genre-tag">模写</span>
+          <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="260" fill="#0a1520"/>
+            <!-- 空 -->
+            <rect width="200" height="140" fill="#0D1B2A"/>
+            <!-- 遠景の波 -->
+            <path d="M0,115 Q50,95 100,115 Q150,135 200,115 L200,140 L0,140 Z" fill="#1B3A6B" opacity="0.4"/>
+            <!-- 大波 -->
+            <path d="M-10,90 C20,50 50,100 80,65 C110,30 140,85 170,55 C185,40 195,60 210,50 L210,130 L-10,130 Z" fill="#1B3A6B" opacity="0.75"/>
+            <!-- 波の白縁 -->
+            <path d="M-10,90 C20,50 50,100 80,65 C110,30 140,85 170,55 C185,40 195,60 210,50" stroke="#C9D9EC" stroke-width="1.5" fill="none" opacity="0.6"/>
+            <!-- 波の爪 -->
+            <path d="M75,72 Q78,55 88,62" stroke="#C9D9EC" stroke-width="1" fill="none" opacity="0.5"/>
+            <path d="M140,75 Q143,58 153,65" stroke="#C9D9EC" stroke-width="1" fill="none" opacity="0.5"/>
+            <!-- 手前の波 -->
+            <path d="M0,130 Q50,115 100,130 Q150,145 200,130 L200,200 L0,200 Z" fill="#2C5282" opacity="0.5"/>
+            <path d="M0,155 Q50,140 100,155 Q150,170 200,155 L200,260 L0,260 Z" fill="#1B3A6B" opacity="0.8"/>
+            <!-- 富士山 -->
+            <path d="M75,130 L100,88 L125,130Z" fill="#0D1B2A" opacity="0.9"/>
+            <path d="M93,98 L100,88 L107,98Z" fill="#E8E8E0" opacity="0.3"/>
+            <!-- 小舟 -->
+            <ellipse cx="40" cy="125" rx="18" ry="4" fill="#0D1B2A" opacity="0.7"/>
+            <ellipse cx="160" cy="120" rx="14" ry="3" fill="#0D1B2A" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="illust-meta">
+          <h3>神奈川沖浪裏 模写</h3>
+          <p class="illust-caption">波の爪の形を意識して模写。構図の大胆さに改めて驚いた。</p>
+        </div>
+      </div>
+
+      <!-- イラスト #2 -->
+      <div class="illust-card">
+        <div class="illust-thumb">
+          <span class="genre-tag">インスパイア</span>
+          <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="260" fill="#0a1520"/>
+            <!-- 空のグラデーション -->
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0D1B2A"/>
+                <stop offset="100%" stop-color="#1B3A6B" stop-opacity="0.4"/>
+              </linearGradient>
+            </defs>
+            <rect width="200" height="180" fill="url(#skyGrad)"/>
+            <!-- 月 -->
+            <circle cx="155" cy="40" r="20" fill="#2C5282" opacity="0.5"/>
+            <circle cx="162" cy="36" r="16" fill="#0a1520"/>
+            <!-- 星 -->
+            <circle cx="40" cy="30" r="1.5" fill="#C9D9EC" opacity="0.6"/>
+            <circle cx="80" cy="20" r="1" fill="#C9D9EC" opacity="0.5"/>
+            <circle cx="110" cy="45" r="1.5" fill="#C9D9EC" opacity="0.4"/>
+            <circle cx="30" cy="55" r="1" fill="#C9D9EC" opacity="0.5"/>
+            <!-- 滝 -->
+            <path d="M90,10 Q88,50 85,90 Q83,120 80,160" stroke="#4A7BAF" stroke-width="3" fill="none" opacity="0.5"/>
+            <path d="M100,10 Q102,50 105,90 Q107,120 110,160" stroke="#4A7BAF" stroke-width="3" fill="none" opacity="0.4"/>
+            <path d="M95,10 Q95,50 95,90 Q95,120 95,160" stroke="#C9D9EC" stroke-width="1.5" fill="none" opacity="0.3"/>
+            <!-- 岩 -->
+            <ellipse cx="50" cy="175" rx="40" ry="20" fill="#1B3A6B" opacity="0.6"/>
+            <ellipse cx="155" cy="185" rx="35" ry="18" fill="#1B3A6B" opacity="0.5"/>
+            <!-- 水たまり -->
+            <ellipse cx="95" cy="210" rx="50" ry="20" fill="#2C5282" opacity="0.3"/>
+            <!-- 飛沫 -->
+            <circle cx="70" cy="195" r="2" fill="#C9D9EC" opacity="0.4"/>
+            <circle cx="115" cy="192" r="2.5" fill="#C9D9EC" opacity="0.35"/>
+            <circle cx="90" cy="188" r="1.5" fill="#C9D9EC" opacity="0.3"/>
+          </svg>
+        </div>
+        <div class="illust-meta">
+          <h3>夜の滝（諸国滝廻りより）</h3>
+          <p class="illust-caption">滝の連作にインスパイアされて夜バージョンで描いてみた。</p>
+        </div>
+      </div>
+
+      <!-- イラスト #3 -->
+      <div class="illust-card">
+        <div class="illust-thumb">
+          <span class="genre-tag">模写</span>
+          <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="260" fill="#0a1520"/>
+            <!-- 空 -->
+            <defs>
+              <linearGradient id="skyGrad2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0D1B2A"/>
+                <stop offset="60%" stop-color="#1B3A6B" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#2C5282" stop-opacity="0.5"/>
+              </linearGradient>
+            </defs>
+            <rect width="200" height="200" fill="url(#skyGrad2)"/>
+            <!-- 富士山（凱風快晴風） -->
+            <path d="M20,200 L100,40 L180,200Z" fill="#1B3A6B" opacity="0.7"/>
+            <!-- 山の模様 -->
+            <path d="M65,140 Q100,100 135,140" stroke="#2C5282" stroke-width="1" fill="none" opacity="0.5"/>
+            <path d="M50,165 Q100,115 150,165" stroke="#2C5282" stroke-width="1" fill="none" opacity="0.4"/>
+            <!-- 雪 -->
+            <path d="M82,60 L100,40 L118,60 Q110,58 100,62 Q90,58 82,60Z" fill="#E8E8E0" opacity="0.35"/>
+            <!-- 雲 -->
+            <path d="M0,120 Q30,105 60,120 Q90,135 120,115 Q150,95 180,115 Q195,120 200,115 L200,130 L0,130Z" fill="#4A7BAF" opacity="0.18"/>
+            <!-- 手前の地平 -->
+            <rect x="0" y="200" width="200" height="60" fill="#0D1B2A"/>
+            <path d="M0,200 Q50,190 100,200 Q150,210 200,200" stroke="#2C5282" stroke-width="1" fill="none" opacity="0.4"/>
+            <!-- 木々 -->
+            <rect x="20" y="188" width="3" height="20" fill="#1B3A6B" opacity="0.5"/>
+            <ellipse cx="21" cy="186" rx="6" ry="8" fill="#1B3A6B" opacity="0.5"/>
+            <rect x="170" y="190" width="3" height="18" fill="#1B3A6B" opacity="0.4"/>
+            <ellipse cx="171" cy="188" rx="6" ry="8" fill="#1B3A6B" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="illust-meta">
+          <h3>凱風快晴 模写</h3>
+          <p class="illust-caption">赤富士として有名な一枚。青バージョンで模写してみた。</p>
+        </div>
+      </div>
+
+      <!-- イラスト #4 -->
+      <div class="illust-card">
+        <div class="illust-thumb">
+          <span class="genre-tag">インスパイア</span>
+          <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="260" fill="#0a1520"/>
+            <!-- 鶴 -->
+            <g opacity="0.75">
+              <!-- 鶴1（大） -->
+              <ellipse cx="100" cy="100" rx="45" ry="15" fill="#E8E8E0" opacity="0.15" transform="rotate(-20,100,100)"/>
+              <circle cx="78" cy="88" r="10" fill="#E8E8E0" opacity="0.2"/>
+              <path d="M78,88 L60,72" stroke="#E8E8E0" stroke-width="1.5" opacity="0.2"/>
+              <path d="M78,88 L55,90" stroke="#E8E8E0" stroke-width="1" opacity="0.15"/>
+              <path d="M78,88 L85,105" stroke="#E8E8E0" stroke-width="1.5" opacity="0.2"/>
+              <!-- 鶴2（小） -->
+              <ellipse cx="145" cy="60" rx="30" ry="10" fill="#E8E8E0" opacity="0.12" transform="rotate(15,145,60)"/>
+              <circle cx="125" cy="52" r="7" fill="#E8E8E0" opacity="0.15"/>
+              <path d="M125,52 L110,40" stroke="#E8E8E0" stroke-width="1.2" opacity="0.15"/>
+              <!-- 鶴3 -->
+              <ellipse cx="55" cy="145" rx="28" ry="9" fill="#E8E8E0" opacity="0.1" transform="rotate(-10,55,145)"/>
+              <circle cx="38" cy="138" r="7" fill="#E8E8E0" opacity="0.12"/>
+            </g>
+            <!-- 波（下半分） -->
+            <path d="M0,170 C30,150 60,180 90,160 C120,140 150,175 180,158 C190,152 196,160 200,158 L200,260 L0,260 Z" fill="#1B3A6B" opacity="0.65"/>
+            <path d="M0,170 C30,150 60,180 90,160 C120,140 150,175 180,158 C190,152 196,160 200,158" stroke="#C9D9EC" stroke-width="1" fill="none" opacity="0.4"/>
+            <path d="M0,190 Q50,175 100,190 Q150,205 200,190 L200,260 L0,260 Z" fill="#2C5282" opacity="0.4"/>
+            <path d="M0,215 Q50,200 100,215 Q150,230 200,215 L200,260 L0,260 Z" fill="#0D1B2A" opacity="0.7"/>
+            <!-- 月の反射 -->
+            <ellipse cx="100" cy="200" rx="15" ry="5" fill="#4A7BAF" opacity="0.2"/>
+            <!-- 月 -->
+            <circle cx="100" cy="35" r="22" fill="#2C5282" opacity="0.3"/>
+            <circle cx="100" cy="35" r="18" fill="#4A7BAF" opacity="0.2"/>
+          </svg>
+        </div>
+        <div class="illust-meta">
+          <h3>鶴と波（北斎モチーフ）</h3>
+          <p class="illust-caption">北斎漫画の鶴の描き方を参考に。波と組み合わせてみた。</p>
+        </div>
+      </div>
+
+      <!-- イラスト #5 -->
+      <div class="illust-card">
+        <div class="illust-thumb">
+          <span class="genre-tag">模写</span>
+          <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="260" fill="#0a1520"/>
+            <!-- 橋（深川万年橋下風） -->
+            <!-- 空 -->
+            <rect width="200" height="150" fill="#0D1B2A"/>
+            <!-- 富士（遠景） -->
+            <path d="M130,150 L160,100 L190,150Z" fill="#1B3A6B" opacity="0.4"/>
+            <path d="M148,115 L160,100 L172,115Z" fill="#E8E8E0" opacity="0.2"/>
+            <!-- 橋のアーチ -->
+            <path d="M10,150 Q100,80 190,150" stroke="#2C5282" stroke-width="4" fill="none" opacity="0.7"/>
+            <path d="M10,155 Q100,85 190,155" stroke="#1B3A6B" stroke-width="6" fill="none" opacity="0.5"/>
+            <!-- 橋の柱 -->
+            <line x1="100" y1="115" x2="100" y2="200" stroke="#2C5282" stroke-width="3" opacity="0.5"/>
+            <line x1="55" y1="135" x2="55" y2="200" stroke="#1B3A6B" stroke-width="2" opacity="0.4"/>
+            <line x1="145" y1="135" x2="145" y2="200" stroke="#1B3A6B" stroke-width="2" opacity="0.4"/>
+            <!-- 川面 -->
+            <rect x="0" y="200" width="200" height="60" fill="#1B3A6B" opacity="0.5"/>
+            <path d="M0,210 Q50,205 100,210 Q150,215 200,210" stroke="#4A7BAF" stroke-width="0.8" fill="none" opacity="0.4"/>
+            <path d="M0,225 Q50,220 100,225 Q150,230 200,225" stroke="#4A7BAF" stroke-width="0.8" fill="none" opacity="0.3"/>
+            <!-- 反射 -->
+            <path d="M10,155 Q100,200 190,155" stroke="#2C5282" stroke-width="2" fill="none" opacity="0.2"/>
+          </svg>
+        </div>
+        <div class="illust-meta">
+          <h3>深川万年橋下 模写</h3>
+          <p class="illust-caption">橋のアーチ越しに富士を見る構図。額縁構図の使い方が巧み。</p>
+        </div>
+      </div>
+
+      <!-- イラスト #6（準備中） -->
+      <div class="illust-card">
+        <div class="illust-thumb" style="background: rgba(27,58,107,0.08);">
+          <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="260" fill="#0a1520"/>
+            <circle cx="100" cy="120" r="40" fill="none" stroke="rgba(74,123,175,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+            <text x="100" y="115" text-anchor="middle" font-size="24" fill="rgba(74,123,175,0.2)" font-family="serif">＋</text>
+            <text x="100" y="140" text-anchor="middle" font-size="9" fill="rgba(74,123,175,0.3)" font-family="serif">準備中</text>
+          </svg>
+        </div>
+        <div class="illust-meta">
+          <h3 style="color:var(--ash);">次回作準備中</h3>
+          <p class="illust-caption">百人一首シリーズの模写に挑戦予定。</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="coming-soon-banner">
+      <p>🖼️ &nbsp; 実際のイラスト画像はここにアップロード予定です</p>
+      <p style="font-size:0.72rem; margin-top:0.5rem; opacity:0.6;">img タグの src を画像ファイルパスに差し替えてください</p>
+    </div>
+  </div>
+
+  <footer>
+    <p class="footer-logo">北斎の宇宙</p>
+    <p>
+      Hokusai Universe — A fan site<br>
+      管理人：Azalea72 ｜ 作品の著作権は各所蔵機関に帰属します
+    </p>
+  </footer>
+
+  <script>
+    function switchTab(name, btn) {
+      // タブボタンの切り替え
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // セクションの切り替え
+      document.querySelectorAll('.section-wrap').forEach(s => s.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
