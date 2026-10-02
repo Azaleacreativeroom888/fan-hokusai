@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>企画展レポート — 北斎の宇宙</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #0D1B2A;
+      --hokusai:    #1B3A6B;
+      --mid-blue:   #2C5282;
+      --light-blue: #4A7BAF;
+      --ash:        #8B8B8B;
+      --paper:      #E8E8E0;
+      --white:      #F4F4EE;
+      --wave:       #C9D9EC;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Noto Serif JP', serif;
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 3rem;
+      background: rgba(13,27,42,0.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(74,123,175,0.2);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      color: var(--wave);
+      text-decoration: none;
+    }
+
+    .nav-links { list-style: none; display: flex; gap: 2.5rem; }
+    .nav-links a {
+      color: var(--ash);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      padding: 7rem 2rem 3rem;
+      max-width: 740px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(74,123,175,0.18);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--ash);
+      margin-bottom: 1.2rem;
+    }
+
+    .breadcrumb a {
+      color: var(--ash);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .breadcrumb a:hover { color: var(--wave); }
+    .breadcrumb span { color: rgba(74,123,175,0.5); }
+
+    .page-eyebrow {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+      color: var(--light-blue);
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header p {
+      font-size: 0.82rem;
+      color: var(--ash);
+    }
+
+    /* ===== FEED ===== */
+    .feed {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 3rem 2rem 7rem;
+    }
+
+    /* ===== REPORT CARD ===== */
+    .report {
+      margin-bottom: 4rem;
+      border-bottom: 1px solid rgba(74,123,175,0.12);
+      padding-bottom: 4rem;
+    }
+
+    .report:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    /* 展覧会タイトル（主役） */
+    .report-title {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.45;
+      letter-spacing: 0.03em;
+      margin-bottom: 1.2rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .report-title::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.2em;
+      width: 3px;
+      height: 1em;
+      background: linear-gradient(to bottom, var(--light-blue), var(--hokusai));
+    }
+
+    /* メタ情報バー */
+    .report-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.5rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--ash);
+      letter-spacing: 0.05em;
+    }
+
+    .meta-item .meta-icon {
+      font-size: 0.8rem;
+      color: var(--light-blue);
+      opacity: 0.8;
+    }
+
+    .meta-item strong {
+      color: var(--wave);
+      font-weight: 400;
+    }
+
+    /* 感想本文 */
+    .report-body {
+      font-size: 0.9rem;
+      color: var(--paper);
+      line-height: 2.2;
+    }
+
+    .report-body p {
+      margin-bottom: 1.1rem;
+    }
+
+    .report-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .report-body .highlight {
+      color: var(--wave);
+      font-weight: 700;
+    }
+
+    /* 訪問日バッジ */
+    .visit-badge {
+      display: inline-block;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--light-blue);
+      border: 1px solid rgba(74,123,175,0.3);
+      padding: 0.2rem 0.7rem;
+      margin-bottom: 1.4rem;
+    }
+
+    /* 区切り装飾 */
+    .report-deco {
+      margin: 2rem 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .report-deco::before,
+    .report-deco::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(74,123,175,0.15);
+    }
+
+    .report-deco span {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: rgba(74,123,175,0.35);
+    }
+
+    /* 年ラベル */
+    .year-label {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .year-label span {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.35em;
+      color: var(--light-blue);
+      white-space: nowrap;
+    }
+
+    .year-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(74,123,175,0.2);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid rgba(74,123,175,0.15);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+
+    footer p {
+      font-size: 0.72rem;
+      color: rgba(139,139,139,0.5);
+      letter-spacing: 0.12em;
+      line-height: 2;
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { gap: 1.2rem; }
+      .page-header, .feed { padding-left: 1.2rem; padding-right: 1.2rem; }
+      .report-meta { gap: 0.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">北斎の宇宙</a>
+    <ul class="nav-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="blog.html">BLOG</a></li>
+      <li><a href="gallery.html" class="active">GALLERY</a></li>
+      <li><a href="about.html">ABOUT</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <nav class="breadcrumb" aria-label="パンくず">
+      <a href="gallery.html">Gallery</a>
+      <span>/</span>
+      <span>企画展レポート</span>
+    </nav>
+    <span class="page-eyebrow">Exhibition Reports</span>
+    <h1>企画展レポート</h1>
+    <p>北斎ゆかりの展覧会を見に行った記録。感じたこと、気づいたこと。</p>
+  </header>
+
+  <main class="feed">
+
+    <!-- ===== 2025年 ===== -->
+    <div class="year-label"><span>2025</span></div>
+
+    <!-- レポート #1 -->
+    <article class="report">
+      <span class="visit-badge">訪問日：2025年12月07日（日）</span>
+      <h2 class="report-title">北斎と暁斎 ― 二人の「画狂」が競い合う世界</h2>
+      <div class="report-meta">
+        <div class="meta-item">
+          <span class="meta-icon">📍</span>
+          <span><strong>すみだ北斎美術館</strong>（東京都墨田区）</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">🗓</span>
+          <span><strong>2025年11月15日（土）〜 2026年01月18日（日）</strong>　65日間</span>
+        </div>
+      </div>
+      <div class="report-body">
+        <p>すみだ北斎美術館で開催中のこの企画展は、北斎と河鍋暁斎という「二人の鬼才」を同じ空間に並べるという、かなりアクの強い構成だった。</p>
+        <p>北斎の波と富士、暁斎の幽霊と骸骨。一見して全然違うのに、<span class="highlight">「描くことへの執念」という軸</span>でぴたりと重なる感じがあって、並べることで初めてわかることがあった。</p>
+        <p>個人的に一番驚いたのは暁斎の速描き実演の記録資料。西洋人の前で即興で描いてみせた話は知っていたけど、資料で見るとまた違う迫力がある。北斎が「絵に狂った老人」を名乗ったのと同じ匂いを感じた。</p>
+        <p>会場はそれほど広くないので1〜2時間で回れる。でも一枚一枚の前でかなり立ち止まってしまったので、気づいたら3時間いた。常設展の小さな模型（北斎が暮らした長屋の再現）も必見。</p>
+      </div>
+    </article>
+
+    <div class="report-deco"><span>〜〜〜</span></div>
+
+    <!-- レポート #2 -->
+    <article class="report">
+      <span class="visit-badge">訪問日：2025年10月19日（日）</span>
+      <h2 class="report-title">冨嶽三十六景 全版木公開 ― 刷る前の北斎</h2>
+      <div class="report-meta">
+        <div class="meta-item">
+          <span class="meta-icon">📍</span>
+          <span><strong>太田記念美術館</strong>（東京都渋谷区原宿）</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">🗓</span>
+          <span><strong>2025年10月01日（水）〜 10月26日（日）</strong>　26日間</span>
+        </div>
+      </div>
+      <div class="report-body">
+        <p>版木を実際に見られる展示は滅多にない。会期も短くて「これは行くしかない」と思って飛び込んだ。</p>
+        <p>版木は思っていたより<span class="highlight">ずっと小さかった</span>。神奈川沖浪裏の実物が小さくて驚いたときと同じ感覚。あの巨大な波が、手のひらに乗るくらいのブロックから生まれているという事実が、頭でわかっていても体に入ってこない。</p>
+        <p>刷られる前の状態を見ると、彫師の仕事がどれだけ繊細だったかがよくわかる。線の細さ、波頭の白い縁取りの彫り残し……北斎の絵は絵師と彫師と摺師の三者の共作なんだと、あらためて実感した。</p>
+        <p>太田記念美術館は小さめの空間だからこそ、一点一点をじっくり見られる。混雑していても動線が分かれているので焦らずに見られたのもよかった。原宿という立地だから観光ついでに立ち寄れる場所でもある。</p>
+      </div>
+    </article>
+
+    <div class="report-deco"><span>〜〜〜</span></div>
+
+    <!-- レポート #3 -->
+    <article class="report">
+      <span class="visit-badge">訪問日：2025年08月11日（月・祝）</span>
+      <h2 class="report-title">HOKUSAI × MANGA ― 北斎漫画と現代コミック</h2>
+      <div class="report-meta">
+        <div class="meta-item">
+          <span class="meta-icon">📍</span>
+          <span><strong>横浜美術館</strong>（神奈川県横浜市）</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">🗓</span>
+          <span><strong>2025年07月19日（土）〜 09月15日（月）</strong>　59日間</span>
+        </div>
+      </div>
+      <div class="report-body">
+        <p>北斎漫画と現代の漫画家の作品を対話させる展示。「漫画」という言葉の起源と現在を一緒に見る、というコンセプトが面白くて、漫画を描いている自分にとっては特別な意味があった。</p>
+        <p>参加作家の現代漫画家が北斎漫画の一場面に応答する形の作品が展示されていて、<span class="highlight">北斎が「スケッチブック」として使っていたものが今の漫画につながっている</span>という視点が新鮮だった。</p>
+        <p>北斎漫画は「人をたくさん描く」「動きを描く」「まだ見ぬものを想像で描く」という意味で、今の漫画家がやっていることとほとんど同じだなと思う。200年の距離がある気がしなかった。</p>
+        <p>地元の横浜美術館でこういう展示が見られてうれしかった。グランモール公園を抜けて行くルートが気持ちよかった。図録を買ったので後でゆっくり読み返す予定。</p>
+      </div>
+    </article>
+
+    <div class="report-deco"><span>〜〜〜</span></div>
+
+    <!-- レポート #4 -->
+    <article class="report">
+      <span class="visit-badge">訪問日：2025年02月22日（土）</span>
+      <h2 class="report-title">北斎の娘・葛飾応為展 ― 光を描いた女</h2>
+      <div class="report-meta">
+        <div class="meta-item">
+          <span class="meta-icon">📍</span>
+          <span><strong>江戸東京博物館</strong>（東京都墨田区）</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">🗓</span>
+          <span><strong>2025年02月01日（土）〜 03月23日（日）</strong>　51日間</span>
+        </div>
+      </div>
+      <div class="report-body">
+        <p>ブログにも書いたけど、葛飾応為の存在を知ったのは北斎の勉強を始めてから。この展示はその応為にフォーカスした珍しい企画展で、絶対に行こうと思っていた。</p>
+        <p>「吉原格子先之図」を実物で見た。光の表現が本当に独特で、暗い室内から格子越しに差し込む光源を逆光気味に描く技法は、<span class="highlight">18世紀の日本絵画でここまでやる人は他にいなかった</span>と思う。父・北斎より上手いと評されることがあるのも納得できた。</p>
+        <p>展示の構成が「北斎との比較」から「応為独自の世界」へと移行していく流れになっていて、後半に進むにつれて応為が「北斎の娘」ではなく「応為」として立ち上がってくる感じがあった。構成がうまかった。</p>
+        <p>女性絵師として江戸時代を生き抜いた話は、漫画の題材にもなりそうだと思いながら見ていた。いつかこの人を主人公に何か描いてみたい。</p>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>
+    <p class="footer-logo">北斎の宇宙</p>
+    <p>
+      Hokusai Universe — A fan site<br>
+      管理人：Azalea72 ｜ 作品の著作権は各所蔵機関に帰属します
+    </p>
+  </footer>
+
+</body>
+</html>
