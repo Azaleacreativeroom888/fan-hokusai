@@ -317,6 +317,102 @@
       line-height: 2;
     }
 
+    /* ===== 企画展リンクボックス ===== */
+    .report-link-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    .report-link-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 2rem 2.5rem;
+      border: 1px solid rgba(74,123,175,0.3);
+      background: rgba(27,58,107,0.1);
+      text-decoration: none;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .report-link-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, rgba(74,123,175,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .report-link-box:hover {
+      background: rgba(27,58,107,0.22);
+      border-color: var(--light-blue);
+      transform: translateY(-2px);
+    }
+
+    .report-link-left { flex: 1; }
+
+    .report-link-eyebrow {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      color: var(--light-blue);
+      margin-bottom: 0.5rem;
+    }
+
+    .report-link-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .report-link-desc {
+      font-size: 0.78rem;
+      color: var(--ash);
+      line-height: 1.8;
+    }
+
+    .report-link-count {
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .report-link-count .count-num {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--light-blue);
+      line-height: 1;
+    }
+
+    .report-link-count .count-label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--ash);
+      margin-top: 0.3rem;
+    }
+
+    .report-link-arrow {
+      flex-shrink: 0;
+      font-size: 1.5rem;
+      color: rgba(74,123,175,0.4);
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .report-link-box:hover .report-link-arrow {
+      color: var(--light-blue);
+      transform: translateX(5px);
+    }
+
     @media (max-width: 680px) {
       nav { padding: 1rem 1.2rem; }
       .nav-links { gap: 1.2rem; }
@@ -935,6 +1031,22 @@
       <p>🖼️ &nbsp; 実際のイラスト画像はここにアップロード予定です</p>
       <p style="font-size:0.72rem; margin-top:0.5rem; opacity:0.6;">img タグの src を画像ファイルパスに差し替えてください</p>
     </div>
+  </div>
+
+  <!-- 企画展レポートリンクボックス -->
+  <div class="report-link-wrap">
+    <a href="report1.html" class="report-link-box">
+      <div class="report-link-left">
+        <span class="report-link-eyebrow">Exhibition Reports</span>
+        <div class="report-link-title">企画展レポート</div>
+        <p class="report-link-desc">北斎ゆかりの展覧会を見に行った記録。<br>感じたこと、気づいたこと、発見したこと。</p>
+      </div>
+      <div class="report-link-count">
+        <span class="count-num">4</span>
+        <span class="count-label">REPORTS</span>
+      </div>
+      <span class="report-link-arrow">→</span>
+    </a>
   </div>
 
   <footer>
