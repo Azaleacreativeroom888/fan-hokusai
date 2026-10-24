@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>葛飾北斎に関わる人々 — 北斎の宇宙</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #0D1B2A;
+      --hokusai:    #1B3A6B;
+      --mid-blue:   #2C5282;
+      --light-blue: #4A7BAF;
+      --ash:        #8B8B8B;
+      --paper:      #E8E8E0;
+      --white:      #F4F4EE;
+      --wave:       #C9D9EC;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Noto Serif JP', serif;
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 3rem;
+      background: rgba(13,27,42,0.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(74,123,175,0.2);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      color: var(--wave);
+      text-decoration: none;
+    }
+
+    .nav-links { list-style: none; display: flex; gap: 2.5rem; }
+    .nav-links a {
+      color: var(--ash);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      padding: 7rem 2rem 3rem;
+      max-width: 800px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(74,123,175,0.18);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--ash);
+      margin-bottom: 1.2rem;
+    }
+    .breadcrumb a { color: var(--ash); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--wave); }
+    .breadcrumb span { color: rgba(74,123,175,0.5); }
+
+    .page-eyebrow {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+      color: var(--light-blue);
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-header p {
+      font-size: 0.82rem;
+      color: var(--ash);
+      line-height: 2;
+    }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(74,123,175,0.12);
+    }
+
+    .filter-btn {
+      background: none;
+      border: 1px solid rgba(74,123,175,0.25);
+      color: var(--ash);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .filter-btn:hover { color: var(--wave); border-color: var(--light-blue); }
+    .filter-btn.active {
+      background: rgba(74,123,175,0.15);
+      color: var(--white);
+      border-color: var(--light-blue);
+    }
+
+    /* ===== MAIN ===== */
+    .people-list {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 2rem 7rem;
+    }
+
+    /* カテゴリ見出し */
+    .category-heading {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 3rem 0 1.5rem;
+    }
+
+    .category-heading:first-child { margin-top: 0; }
+
+    .category-heading span {
+      font-size: 0.68rem;
+      letter-spacing: 0.35em;
+      color: var(--light-blue);
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+
+    .category-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(74,123,175,0.2);
+    }
+
+    /* 人物カード */
+    .person-card {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+      border-bottom: 1px solid rgba(74,123,175,0.1);
+      transition: background 0.2s;
+    }
+
+    .person-card:hover { background: rgba(27,58,107,0.08); }
+
+    /* 左：名前・没年 */
+    .person-left {
+      padding: 1.5rem 1.5rem 1.5rem 0;
+      border-right: 1px solid rgba(74,123,175,0.12);
+    }
+
+    .person-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+      margin-bottom: 0.2rem;
+    }
+
+    .person-name-en {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.68rem;
+      color: var(--light-blue);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+
+    .person-dates {
+      font-size: 0.72rem;
+      color: var(--ash);
+      letter-spacing: 0.05em;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .person-dates .died {
+      display: block;
+      margin-top: 0.1rem;
+      font-size: 0.68rem;
+      color: rgba(139,139,139,0.6);
+    }
+
+    /* 関係タグ */
+    .relation-tag {
+      display: inline-block;
+      margin-top: 0.7rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      padding: 0.15rem 0.55rem;
+      border: 1px solid rgba(74,123,175,0.3);
+      color: var(--light-blue);
+    }
+
+    /* 右：解説 */
+    .person-right {
+      padding: 1.5rem 0 1.5rem 1.5rem;
+    }
+
+    .person-desc {
+      font-size: 0.85rem;
+      color: var(--paper);
+      line-height: 2.1;
+    }
+
+    .person-desc .hl {
+      color: var(--wave);
+      font-weight: 700;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid rgba(74,123,175,0.15);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+    footer p {
+      font-size: 0.72rem;
+      color: rgba(139,139,139,0.5);
+      letter-spacing: 0.12em;
+      line-height: 2;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { gap: 1.2rem; }
+      .page-header, .filter-bar, .people-list { padding-left: 1.2rem; padding-right: 1.2rem; }
+      .person-card { grid-template-columns: 1fr; }
+      .person-left { border-right: none; border-bottom: 1px solid rgba(74,123,175,0.1); padding: 1.2rem 0 0.8rem; }
+      .person-right { padding: 0.8rem 0 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">北斎の宇宙</a>
+    <ul class="nav-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="blog.html">BLOG</a></li>
+      <li><a href="gallery.html" class="active">GALLERY</a></li>
+      <li><a href="about.html">ABOUT</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <nav class="breadcrumb" aria-label="パンくず">
+      <a href="gallery.html">Gallery</a>
+      <span>/</span>
+      <span>葛飾北斎に関わる人々</span>
+    </nav>
+    <span class="page-eyebrow">People</span>
+    <h1>葛飾北斎に関わる人々</h1>
+    <p>
+      北斎の生涯に登場する人物たちの記録。<br>
+      師、弟子、家族、版元、そして遠く海を越えて影響を受けた芸術家まで。
+    </p>
+  </header>
+
+  <!-- フィルター -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterPeople('all', this)">すべて</button>
+    <button class="filter-btn" onclick="filterPeople('family', this)">家族</button>
+    <button class="filter-btn" onclick="filterPeople('master', this)">師匠</button>
+    <button class="filter-btn" onclick="filterPeople('pupil', this)">弟子</button>
+    <button class="filter-btn" onclick="filterPeople('publisher', this)">版元・支援者</button>
+    <button class="filter-btn" onclick="filterPeople('influenced', this)">影響を受けた人</button>
+  </div>
+
+  <main class="people-list">
+
+    <!-- 家族 -->
+    <div class="category-heading" data-cat="family"><span>家族 / Family</span></div>
+
+    <div class="person-card" data-cat="family">
+      <div class="person-left">
+        <div class="person-name">葛飾応為<span class="person-name-en">Katsushika Ōi</span></div>
+        <div class="person-dates">
+          生没年：1800年頃 — 1866年頃
+          <span class="died">没年齢：推定60代</span>
+        </div>
+        <span class="relation-tag">娘・絵師</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          北斎の三女。<span class="hl">「吉原格子先之図」</span>に代表される夜の光の表現で知られ、逆光や室内光の描写は父をも凌ぐとも評される。晩年の父を世話しながら絵を描き続け、北斎の制作を実質的に支えた存在でもあった。生没年が不明な部分が多く、謎の多い絵師でもある。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="family">
+      <div class="person-left">
+        <div class="person-name">北斎の長男<span class="person-name-en">Hokusai's eldest son</span></div>
+        <div class="person-dates">
+          生没年：不詳
+          <span class="died">—</span>
+        </div>
+        <span class="relation-tag">長男</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          北斎には複数の子供がいたが、詳細な記録が残っていないものが多い。長男については資料が乏しく、絵師としての活動は伝わっていない。北斎の家庭生活は謎が多く、二度の結婚と多くの子供がいたとされるが、家族関係の全容は今も研究途上にある。
+        </p>
+      </div>
+    </div>
+
+    <!-- 師匠 -->
+    <div class="category-heading" data-cat="master"><span>師匠 / Masters</span></div>
+
+    <div class="person-card" data-cat="master">
+      <div class="person-left">
+        <div class="person-name">勝川春章<span class="person-name-en">Katsukawa Shunshō</span></div>
+        <div class="person-dates">
+          生没年：1726年 — 1792年
+          <span class="died">没年齢：推定65歳</span>
+        </div>
+        <span class="relation-tag">最初の師匠</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          北斎が最初に入門した師。勝川派の代表的絵師で、役者絵・相撲絵を得意とした。北斎は19歳頃に春章に入門し、「勝川春朗」を名乗る。春章の死後、北斎は勝川派を離れ独自の道を歩みはじめる。<span class="hl">北斎の出発点となった人物</span>であり、浮世絵師としての基礎を与えた。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="master">
+      <div class="person-left">
+        <div class="person-name">俵屋宗理（二代）<span class="person-name-en">Tawaraya Sōri II</span></div>
+        <div class="person-dates">
+          生没年：不詳
+          <span class="died">—</span>
+        </div>
+        <span class="relation-tag">号を継承した流派</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          北斎は勝川派を離れた後、琳派の影響を受けた時期に「俵屋宗理」を名乗った。この時期の作品は丸みを帯びた優美な線が特徴で、後の北斎とはまた異なる風貌を持つ。号を弟子に譲って次の号へと移行する習慣が北斎にはあり、<span class="hl">生涯で30以上の号</span>を使ったとされる。
+        </p>
+      </div>
+    </div>
+
+    <!-- 弟子 -->
+    <div class="category-heading" data-cat="pupil"><span>弟子 / Pupils</span></div>
+
+    <div class="person-card" data-cat="pupil">
+      <div class="person-left">
+        <div class="person-name">渓斎英泉<span class="person-name-en">Keisai Eisen</span></div>
+        <div class="person-dates">
+          生没年：1790年 — 1848年
+          <span class="died">没年齢：57歳</span>
+        </div>
+        <span class="relation-tag">弟子・浮世絵師</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          美人画を中心に活躍した浮世絵師。北斎の弟子のひとりで、独自の妖艶な美人画スタイルを確立した。広重とともに<span class="hl">「木曽街道六十九次」</span>を手がけたことでも知られる。師の影響を受けながらも独自の道を切り開いた、北斎門下を代表する一人。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="pupil">
+      <div class="person-left">
+        <div class="person-name">蹄斎北馬<span class="person-name-en">Teisai Hokuba</span></div>
+        <div class="person-dates">
+          生没年：1771年 — 1844年
+          <span class="died">没年齢：72歳</span>
+        </div>
+        <span class="relation-tag">高弟</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          北斎の高弟のひとり。「北馬」という号に北斎の「北」を受け継いでいることからも、師弟関係の深さがうかがえる。読本の挿絵や美人画を多く残し、北斎の画風を広める役割を担った。北斎門下は200人以上いたとされるが、北馬はそのなかでも特に<span class="hl">師の信頼が厚かった弟子</span>のひとりとして伝わる。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="pupil">
+      <div class="person-left">
+        <div class="person-name">柳川重信<span class="person-name-en">Yanagawa Shigenobu</span></div>
+        <div class="person-dates">
+          生没年：1787年 — 1832年
+          <span class="died">没年齢：44歳</span>
+        </div>
+        <span class="relation-tag">弟子・娘婿</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          北斎の弟子であり、娘と結婚したことで婿でもある。肉筆画・版画の両方を手がけ、ユーモラスな戯画を得意とした。しかし北斎との関係は晩年に悪化したとされ、最終的に師弟・親子関係が断絶したとも伝わる。<span class="hl">北斎の家族と弟子関係が複雑に絡み合った</span>人物として記憶される。
+        </p>
+      </div>
+    </div>
+
+    <!-- 版元・支援者 -->
+    <div class="category-heading" data-cat="publisher"><span>版元・支援者 / Publishers &amp; Patrons</span></div>
+
+    <div class="person-card" data-cat="publisher">
+      <div class="person-left">
+        <div class="person-name">西村屋与八<span class="person-name-en">Nishimuraya Yohachi</span></div>
+        <div class="person-dates">
+          生没年：不詳
+          <span class="died">—</span>
+        </div>
+        <span class="relation-tag">版元</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          北斎と長く関わった版元のひとり。江戸の出版業者として多くの絵師と仕事をしたが、北斎とは特に継続的な関係があった。版元は単なる出版者ではなく企画・資金・販売を一手に担う存在で、<span class="hl">北斎の作品世界を世に送り出す実務的な要</span>でもあった。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="publisher">
+      <div class="person-left">
+        <div class="person-name">高井鴻山<span class="person-name-en">Takai Kōzan</span></div>
+        <div class="person-dates">
+          生没年：1806年 — 1883年
+          <span class="died">没年齢：76歳</span>
+        </div>
+        <span class="relation-tag">晩年の支援者</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          信州小布施の豪農・文人。北斎を晩年に小布施へ招き、滞在と制作を支援した。北斎は80代後半に小布施を複数回訪れ、<span class="hl">祭屋台の天井絵「男浪・女浪」</span>などを制作した。単なるパトロンにとどまらず、北斎を精神的にも支えた人物として知られる。小布施には現在も北斎ゆかりの史跡が残る。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="publisher">
+      <div class="person-left">
+        <div class="person-name">永寿堂西村屋<span class="person-name-en">Eijudō Nishimuraya</span></div>
+        <div class="person-dates">
+          生没年：不詳
+          <span class="died">—</span>
+        </div>
+        <span class="relation-tag">版元（冨嶽三十六景）</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          <span class="hl">「冨嶽三十六景」の版元</span>として最も重要な存在。当初36枚で企画されたシリーズが人気により46枚まで増刷されたのも、この版元が需要を見抜いて追加を決断したからに他ならない。ベロ藍の積極採用も版元との協議のなかで決まったとされ、北斎の代表作が生まれる土台を作った。
+        </p>
+      </div>
+    </div>
+
+    <!-- 影響を受けた人 -->
+    <div class="category-heading" data-cat="influenced"><span>影響を受けた人 / Those Influenced</span></div>
+
+    <div class="person-card" data-cat="influenced">
+      <div class="person-left">
+        <div class="person-name">フィンセント・ファン・ゴッホ<span class="person-name-en">Vincent van Gogh</span></div>
+        <div class="person-dates">
+          生没年：1853年 — 1890年
+          <span class="died">没年齢：37歳</span>
+        </div>
+        <span class="relation-tag">影響を受けた画家</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          オランダ生まれの後期印象派の画家。浮世絵を熱狂的に収集し、<span class="hl">「僕は日本人だ」</span>と手紙に書くほど日本美術に傾倒した。北斎の大波の構図・太く力強い輪郭線・大胆な色面構成は、ゴッホの作風に直接影響を与えたと言われる。「糸杉と星の道」などに見られる渦巻く線描は、北斎の波との共鳴とも語られる。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="influenced">
+      <div class="person-left">
+        <div class="person-name">クロード・モネ<span class="person-name-en">Claude Monet</span></div>
+        <div class="person-dates">
+          生没年：1840年 — 1926年
+          <span class="died">没年齢：86歳</span>
+        </div>
+        <span class="relation-tag">影響を受けた画家</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          フランス印象派の巨匠。自邸ジヴェルニーに250点以上の日本の浮世絵を飾り、そのなかには北斎の作品も含まれていた。<span class="hl">水の表面・光の変化・連作という概念</span>において、北斎との強い共鳴が指摘されている。「睡蓮」連作と北斎の「冨嶽三十六景」は、同じ主題を多角度から描くという発想で通底している。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="influenced">
+      <div class="person-left">
+        <div class="person-name">ドビュッシー<span class="person-name-en">Claude Debussy</span></div>
+        <div class="person-dates">
+          生没年：1862年 — 1918年
+          <span class="died">没年齢：55歳</span>
+        </div>
+        <span class="relation-tag">影響を受けた音楽家</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          フランスの作曲家。交響詩「海」の自筆スコアの表紙に、北斎の<span class="hl">「神奈川沖浪裏」</span>を使用したことで有名。ドビュッシー自身が「海」の着想として北斎の波を意識していたかは諸説あるが、この一枚の版画が西洋音楽にまで波紋を広げていたことは確かである。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="influenced">
+      <div class="person-left">
+        <div class="person-name">エドガー・ドガ<span class="person-name-en">Edgar Degas</span></div>
+        <div class="person-dates">
+          生没年：1834年 — 1917年
+          <span class="died">没年齢：83歳</span>
+        </div>
+        <span class="relation-tag">影響を受けた画家</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          フランスの印象派画家。バレエダンサーや競馬場の情景で知られる。北斎漫画の人物描写、特に<span class="hl">動きの瞬間を切り取る技法</span>に強く影響を受けたとされる。斜めに切り取られた画面構成や、画面端で途切れる人物の描き方は、浮世絵の構図法との共鳴として語られることが多い。
+        </p>
+      </div>
+    </div>
+
+    <div class="person-card" data-cat="influenced">
+      <div class="person-left">
+        <div class="person-name">シーボルト<span class="person-name-en">Philipp Franz von Siebold</span></div>
+        <div class="person-dates">
+          生没年：1796年 — 1866年
+          <span class="died">没年齢：70歳</span>
+        </div>
+        <span class="relation-tag">北斎を西洋に紹介</span>
+      </div>
+      <div class="person-right">
+        <p class="person-desc">
+          ドイツ人の医師・博物学者で、長崎・出島に滞在し日本の自然と文化を調査した。著書<span class="hl">「日本（Nippon）」</span>の挿絵として北斎漫画を収録し、ヨーロッパへ紹介した最初期の人物のひとり。北斎の絵が海を渡るきっかけを作った存在として、ジャポニスム普及への貢献は大きい。
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <p class="footer-logo">北斎の宇宙</p>
+    <p>
+      Hokusai Universe — A fan site<br>
+      管理人：Azalea72 ｜ 作品の著作権は各所蔵機関に帰属します
+    </p>
+  </footer>
+
+  <script>
+    function filterPeople(cat, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('.person-card');
+      const headings = document.querySelectorAll('.category-heading');
+
+      cards.forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? 'grid' : 'none';
+      });
+
+      headings.forEach(h => {
+        if (cat === 'all') {
+          h.style.display = 'flex';
+        } else {
+          h.style.display = h.dataset.cat === cat ? 'flex' : 'none';
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
